@@ -29,30 +29,38 @@ class Client:
             self.peers = self.tracker.update()
             print("Atualização enviada ao tracker.")
 
+    def choose_rarest_piece(self, peers, my_pieces):
+        piece_count = {}
+        piece_owners = {}
+
+        for peer in peers:
+            for piece in peer['pieces']:
+
+                if piece in my_pieces:
+                    continue
+
+                piece_count[piece] = piece_count.get(piece, 0) + 1
+
+                if piece not in piece_owners:
+                    piece_owners[piece] = []
+                piece_owners[piece].append(peer)
+
+        rarest_pieces = sorted(piece_count.keys(), key=lambda x: piece_count[x])
+
+        if not rarest_pieces:
+            return None, None
+
+        piece = rarest_pieces[0]
+        chosen_peer = random.choice(piece_owners[piece])
+        return piece, chosen_peer
+
     def download_loop(self):
         while True:
             peers = self.peers
             my_pieces = set(self.piece_manager.list_pieces())
-            piece_count = {}
-            for peer in self.peers:
-                for piece in peer['pieces']:
-                    piece_count[piece] = piece_count.get(piece, 0) + 1
-            rarest_pieces = sorted(piece_count, key=lambda x: piece_count[x])
-            for piece in rarest_pieces:
-                if piece not in my_pieces:
-                    rarest_piece = piece
-                    break
-            else:
-                rarest_piece = None
+            rarest_piece, peer = self.choose_rarest_piece(peers, my_pieces)
 
-            if rarest_piece is not None:
-                candidates = [peer for peer in peers if rarest_piece in peer['pieces']]
-                if candidates:
-                    peer = random.choice(candidates)
-                    self.p2p.request_piece(peer, rarest_piece)
+            if rarest_piece is not None and peer is not None:
+                self.p2p.request_piece(peer, rarest_piece)
 
-            for peer in peers:
-                for piece in peer['pieces']:
-                    if piece not in my_pieces:
-                        self.p2p.request_piece(peer, piece)
             time.sleep(10)
