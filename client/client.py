@@ -36,7 +36,7 @@ class Client:
         piece_owners = {}
 
         for peer in peers:
-            for piece in peer['pieces']:
+            for piece in peer.pieces:
 
                 if piece in my_pieces:
                     continue
