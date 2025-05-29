@@ -17,6 +17,8 @@ class Client:
         self.peers = []
 
     def start(self):
+        self.peers = self.tracker.register()
+
         threading.Thread(target=self.p2p.serve, daemon=True).start()
         threading.Thread(target=self.periodic_update, daemon=True).start()
         threading.Thread(target=self.download_loop, daemon=True).start()
@@ -56,9 +58,8 @@ class Client:
 
     def download_loop(self):
         while True:
-            peers = self.peers
             my_pieces = set(self.piece_manager.list_pieces())
-            rarest_piece, peer = self.choose_rarest_piece(peers, my_pieces)
+            rarest_piece, peer = self.choose_rarest_piece(self.peers, my_pieces)
 
             if rarest_piece is not None and peer is not None:
                 self.p2p.request_piece(peer, rarest_piece)

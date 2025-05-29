@@ -20,6 +20,7 @@ class TrackerClient:
             'port': self.client_port,
             'pieces': self.piece_manager.list_pieces()
         }
+
         self.sock.sendto(json.dumps(message).encode(), (self.tracker_ip, self.tracker_port))
 
         data, _ = self.sock.recvfrom(4096)
