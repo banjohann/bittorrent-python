@@ -37,7 +37,7 @@ class TrackerServer:
         key = (packet.ip, packet.port)
         self.peers[key].pieces = packet.content['pieces']
 
-        print(f"Peer atualizado: {packet.ip}:{packet.port} -> {packet.content['pieces'].len()} pedaços")
+        print(f"Peer atualizado: {packet.ip}:{packet.port} -> {len(packet.content['pieces'])} pedaços")
 
         peer_list = self.get_peers(packet.ip, packet.port)
 
