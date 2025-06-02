@@ -10,13 +10,13 @@ class PeerConnection:
     def request_piece(self, peer, piece_id):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
-                s.connect((peer['ip'], peer['port']))
+                s.connect((peer.ip, peer.port))
                 s.sendall(json.dumps({'type': 'request', 'piece': piece_id}).encode())
                 data = s.recv(4096)
                 self.piece_manager.save_piece(piece_id, data)
-                print(f"Recebido pedaço {piece_id} de {peer['ip']}:{peer['port']}")
+                print(f"Recebido pedaço {piece_id} de {peer.ip}:{peer.port}")
             except Exception as e:
-                print(f"Erro ao conectar com peer {peer['ip']}:{peer['port']} - {e}")
+                print(f"Erro ao conectar com peer {peer.ip}:{peer.port} - {e}")
 
     def serve(self):
         def handler(conn, addr):

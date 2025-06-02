@@ -1,7 +1,7 @@
 import json
 
 class DataPacket:
-    def __init__(self, data, ip, port):
+    def __init__(self, data, ip):
         self.content = json.loads(data.decode())
         self.ip = ip
-        self.port = port
+        self.port = self.content['port']

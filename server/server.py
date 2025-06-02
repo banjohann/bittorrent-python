@@ -16,7 +16,7 @@ class TrackerServer:
         print(f"Tracker rodando")
         
     def handle_peer_packet(self, data, addr):
-        packet = DataPacket(data, addr[0], addr[1])
+        packet = DataPacket(data, addr[0])
 
         if packet.content['type'] == 'register':
             self.handle_peer_connection(packet)

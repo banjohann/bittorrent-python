@@ -18,8 +18,12 @@ class Client:
 
     def start(self):
         self.peers = self.tracker.register()
+        print("Registro no tracker concluído. Peers disponíveis:", len(self.peers))
 
+        # Inicia servidor para compartilhar peças
         threading.Thread(target=self.p2p.serve, daemon=True).start()
+
+        # Inicia atualização periódica do tracker e loop de download
         threading.Thread(target=self.periodic_update, daemon=True).start()
         threading.Thread(target=self.download_loop, daemon=True).start()
         while True:
@@ -27,13 +31,13 @@ class Client:
 
     def periodic_update(self):
         while True:
-            time.sleep(30)
+            time.sleep(10)
             self.peers = self.tracker.update()
             print("Atualização enviada ao tracker.")
 
     def choose_rarest_piece(self, peers, my_pieces):
-        piece_count = {}
-        piece_owners = {}
+        piece_count = {} # {piece1: count}
+        piece_owners = {} # {piece1: [peer1, peer2, ...]}
 
         for peer in peers:
             for piece in peer.pieces:
