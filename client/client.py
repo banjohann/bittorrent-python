@@ -20,10 +20,8 @@ class Client:
         self.peers = self.tracker.register()
         print("Registro no tracker concluído. Peers disponíveis:", len(self.peers))
 
-        # Inicia servidor para compartilhar peças
         threading.Thread(target=self.p2p.serve, daemon=True).start()
 
-        # Inicia atualização periódica do tracker e loop de download
         threading.Thread(target=self.periodic_update, daemon=True).start()
         threading.Thread(target=self.download_loop, daemon=True).start()
         while True:

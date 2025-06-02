@@ -25,8 +25,8 @@ class TrackerServer:
 
     def handle_peer_connection(self, packet):
         key = (packet.ip, packet.port)
-        self.peers[key] = Peer(packet.ip, packet.port, packet.content['pieces'])
-        print(f"Peer registrado: {packet.ip}:{packet.port} -> {packet.content['pieces']}")
+        self.peers[key] = Peer(packet.ip, packet.port, packet.content['pieces'], packet.content['port'])
+        print(f"Peer registrado: {packet.ip}:{packet.port} --TCP: {packet.content['port']} -> {packet.content['pieces']}")
 
         peer_list = self.get_peers(packet.ip, packet.port)
 
@@ -37,7 +37,7 @@ class TrackerServer:
         key = (packet.ip, packet.port)
         self.peers[key].pieces = packet.content['pieces']
 
-        print(f"Peer atualizado: {packet.ip}:{packet.port} -> {len(packet.content['pieces'])} pedaços")
+        print(f"Peer atualizado: {packet.ip}:{packet.port} -> {packet.content['pieces'].len()} pedaços")
 
         peer_list = self.get_peers(packet.ip, packet.port)
 
