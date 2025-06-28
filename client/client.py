@@ -7,6 +7,8 @@ from piece_manager import PieceManager
 from tracker_client import TrackerClient
 from peer_connection import PeerConnection
 
+DEFAULT_LOOP_INTERVAL = 3
+
 class Client:
     def __init__(self, tracker_ip, tracker_port, client_port):
         self.piece_manager = PieceManager()
@@ -20,16 +22,38 @@ class Client:
         self.peers = self.tracker.register()
         print("Registro no tracker concluído. Peers disponíveis:", len(self.peers))
 
-        threading.Thread(target=self.p2p.serve, daemon=True).start()
+        self.request_rarest_piece()
+        self.request_random_piece()
 
+        threading.Thread(target=self.p2p.serve, daemon=True).start()
         threading.Thread(target=self.periodic_update, daemon=True).start()
         threading.Thread(target=self.download_loop, daemon=True).start()
+
         while True:
             time.sleep(1)
 
+    def request_random_piece(self):
+        my_pieces = set(self.piece_manager.list_pieces())
+        peer = random.choice(self.peers)
+
+        available_pieces = [piece for piece in peer.pieces if piece not in my_pieces]
+
+        if not available_pieces:
+            return
+
+        random_piece = random.choice(available_pieces)
+        self.p2p.request_piece(peer, random_piece)
+
+    def request_rarest_piece(self):
+        my_pieces = set(self.piece_manager.list_pieces())
+        rarest_piece, peer = self.choose_rarest_piece(self.peers, my_pieces)
+
+        if rarest_piece is not None and peer is not None:
+            self.p2p.request_piece(peer, rarest_piece)
+
     def periodic_update(self):
         while True:
-            time.sleep(10)
+            time.sleep(DEFAULT_LOOP_INTERVAL)
             self.peers = self.tracker.update()
             print("Atualização enviada ao tracker.")
 
@@ -60,10 +84,5 @@ class Client:
 
     def download_loop(self):
         while True:
-            my_pieces = set(self.piece_manager.list_pieces())
-            rarest_piece, peer = self.choose_rarest_piece(self.peers, my_pieces)
-
-            if rarest_piece is not None and peer is not None:
-                self.p2p.request_piece(peer, rarest_piece)
-
-            time.sleep(10)
+            self.request_rarest_piece()
+            time.sleep(DEFAULT_LOOP_INTERVAL)
