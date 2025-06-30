@@ -12,7 +12,9 @@ DEFAULT_LOOP_INTERVAL = 3
 
 class Client:
     def __init__(self, tracker_ip, tracker_port, client_port):
+        print("Iniciando cliente")
         self.piece_manager = PieceManager()
+        print("Criando socket")
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.tracker = TrackerClient(self.sock, tracker_ip, tracker_port, client_port, self.piece_manager)
         self.p2p = PeerConnection(client_port, self.piece_manager)
@@ -20,6 +22,7 @@ class Client:
         self.peers = []
 
     def start(self):
+        print("Tentando se registrar no tracker")
         self.peers = self.tracker.register()
         print("Registro no tracker concluído. Peers disponíveis:", len(self.peers))
 

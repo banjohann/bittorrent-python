@@ -2,7 +2,7 @@ import os
 
 class PieceManager:
     def __init__(self, pieces_dir="pieces"):
-        self.pieces_dir = os.path.join(os.path.dirname(__file__), pieces_dir)
+        self.pieces_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pieces")
         os.makedirs(self.pieces_dir, exist_ok=True)
 
     def list_pieces(self):
