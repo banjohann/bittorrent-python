@@ -18,7 +18,7 @@ class TrackerClient:
         }
         self.sock.sendto(json.dumps(message).encode(), (self.tracker_ip, self.tracker_port))
         
-        data, _ = self.sock.recvfrom(4096)
+        data, _ = self.sock.recvfrom(65535)
         peers_dict = json.loads(data.decode())['peers']
         
         peers = []

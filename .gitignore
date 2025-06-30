@@ -1,5 +1,7 @@
 
 /client/pieces/*
+client/__pycache__/
+server/__pycache__/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

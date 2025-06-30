@@ -9,7 +9,6 @@ class TrackerServer:
     def __init__(self, ip='0.0.0.0', port=6881):
         self.TRACKER_IP = ip
         self.TRACKER_PORT = port
-        # Estrutura: { (ip, port): Peer }
         self.peers = {}
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((self.TRACKER_IP, self.TRACKER_PORT))
@@ -22,6 +21,8 @@ class TrackerServer:
             self.handle_peer_connection(packet)
         elif packet.content['type'] == 'update':
             self.handle_update(packet)
+        elif packet.content['type'] == 'logoff':
+            self.handle_logoff(packet)
 
     def handle_peer_connection(self, packet):
         key = (packet.ip, packet.port)
@@ -43,6 +44,12 @@ class TrackerServer:
 
         response = json.dumps({'peers': peer_list})
         self.sock.sendto(response.encode(), (packet.ip, packet.port))
+
+    def handle_logoff(self, packet):
+        key = (packet.ip, packet.port)
+        if key in self.peers:
+            del self.peers[key]
+            print(f"Peer desconectado: {packet.ip}:{packet.port}")
 
     def get_peers(self, exclude_ip, exclude_port):
         peer_list = [

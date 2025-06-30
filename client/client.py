@@ -2,6 +2,7 @@ import socket
 import threading
 import time
 import random
+import json
 
 from piece_manager import PieceManager
 from tracker_client import TrackerClient
@@ -31,6 +32,14 @@ class Client:
 
         while True:
             time.sleep(1)
+            
+    def logoff(self):
+        message = {
+            'type': 'logoff',
+            'port': self.client_port,
+        }
+        self.sock.sendto(json.dumps(message).encode(), (self.tracker.tracker_ip, self.tracker.tracker_port))
+        self.sock.close()
 
     def request_random_piece(self):
         my_pieces = set(self.piece_manager.list_pieces())
@@ -58,8 +67,8 @@ class Client:
             print("Atualização enviada ao tracker.")
 
     def choose_rarest_piece(self, peers, my_pieces):
-        piece_count = {} # {piece1: count}
-        piece_owners = {} # {piece1: [peer1, peer2, ...]}
+        piece_count = {}
+        piece_owners = {}
 
         for peer in peers:
             for piece in peer.pieces:
