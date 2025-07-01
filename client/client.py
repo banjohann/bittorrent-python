@@ -11,14 +11,12 @@ from peer_connection import PeerConnection
 DEFAULT_LOOP_INTERVAL = 3
 
 class Client:
-    def __init__(self, tracker_ip, tracker_port, client_port):
-        print("Iniciando cliente")
+    def __init__(self, tracker_ip, tracker_port):
         self.piece_manager = PieceManager()
-        print("Criando socket")
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.tracker = TrackerClient(self.sock, tracker_ip, tracker_port, client_port, self.piece_manager)
-        self.p2p = PeerConnection(client_port, self.piece_manager)
-        self.client_port = client_port
+        self.p2p = PeerConnection(self.piece_manager)
+        self.client_port = self.p2p.client_port
         self.peers = []
 
     def start(self):
