@@ -43,6 +43,10 @@ class Client:
         self.sock.close()
 
     def request_random_piece(self):
+        if not self.peers:
+            print("Nenhum peer disponível para solicitar um pedaço.")
+            return
+
         my_pieces = set(self.piece_manager.list_pieces())
         peer = random.choice(self.peers)
 
