@@ -14,9 +14,9 @@ class Client:
     def __init__(self, tracker_ip, tracker_port):
         self.piece_manager = PieceManager()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.tracker = TrackerClient(self.sock, tracker_ip, tracker_port, client_port, self.piece_manager)
         self.p2p = PeerConnection(self.piece_manager)
         self.client_port = self.p2p.client_port
+        self.tracker = TrackerClient(self.sock, tracker_ip, tracker_port, self.client_port, self.piece_manager)
         self.peers = []
 
     def start(self):
@@ -33,7 +33,7 @@ class Client:
 
         while True:
             time.sleep(1)
-            
+
     def logoff(self):
         message = {
             'type': 'logoff',
